@@ -1,6 +1,6 @@
 title: Skupper DMZ
 subtitle: Connecting services separated by firewalls and a DMZ
-github_actions_url: https://github.com/skupperproject/skupper-example-hello-world/actions/workflows/main.yaml
+github_actions_url: https://github.com/ssorj/skupper-example-dmz/actions/workflows/main.yaml
 overview: |
   XXX
 sites:
