@@ -1,6 +1,6 @@
 title: Skupper Hello World DMZ
 subtitle: Connect services separated by firewalls and a DMZ
-github_actions_url: https://github.com/ssorj/skupper-example-dmz/actions/workflows/main.yaml
+github_actions_url: https://github.com/skupperproject/skupper-example-dmz/actions/workflows/main.yaml
 overview: |
   This example is a basic multi-service HTTP application deployed
   across one Kubernetes cluster in the public cloud and another
@@ -11,7 +11,7 @@ overview: |
 
   * A backend service that exposes an `/api/hello` endpoint.  It
     returns greetings of the form `Hi, <your-name>.  I am <my-name>
-    (<pod-name>)`.
+    (<pod>)`.
 
   * A frontend service that sends greetings to the backend and
     fetches new greetings in response.
