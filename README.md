@@ -1,8 +1,8 @@
-# Skupper DMZ
+# Skupper Hello World DMZ
 
-[![main](https://github.com/skupperproject/skupper-example-hello-world/actions/workflows/main.yaml/badge.svg)](https://github.com/skupperproject/skupper-example-hello-world/actions/workflows/main.yaml)
+[![main](https://github.com/ssorj/skupper-example-dmz/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-dmz/actions/workflows/main.yaml)
 
-#### Connecting services separated by firewalls and a DMZ
+#### Connect services separated by firewalls and a DMZ
 
 This example is part of a [suite of examples][examples] showing the
 different ways you can use [Skupper][website] to connect services
@@ -32,7 +32,24 @@ across cloud providers, data centers, and edge sites.
 
 ## Overview
 
-XXX
+This example is a basic multi-service HTTP application deployed
+across one Kubernetes cluster in the public cloud and another
+Kubernetes cluster in a private data center.  They are separated by
+a DMZ and two firewalls.
+
+It contains two services:
+
+* A backend service that exposes an `/api/hello` endpoint.  It
+  returns greetings of the form `Hi, <your-name>.  I am <my-name>
+  (<pod-name>)`.
+
+* A frontend service that sends greetings to the backend and
+  fetches new greetings in response.
+
+The backend service runs in the private on-prem cluster, and the
+frontend service runs in the public cloud.  The two sites are linked
+by a relay site in the DMZ.  Skupper enables the frontend to connect
+to the backend without a VPN or special firewall rules.
 
 ## Prerequisites
 
@@ -43,13 +60,13 @@ XXX
   choose][kube-providers]
 
 [install-kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
-[kube-providers]: https://skupper.io/start/index.html#prerequisites
+[kube-providers]: https://skupper.io/start/kubernetes.html
 
 ## Step 1: Install the Skupper command-line tool
 
-The `skupper` command-line tool is the primary entrypoint for
-installing and configuring Skupper.  You need to install the
-`skupper` command only once for each development environment.
+The `skupper` command-line tool is the entrypoint for installing
+and configuring Skupper.  You need to install the `skupper`
+command only once for each development environment.
 
 On Linux or Mac, you can use the install script (inspect it
 [here][install-script]) to download and extract the command:
@@ -94,32 +111,26 @@ _**Console for public:**_
 export KUBECONFIG=~/.kube/config-public
 ~~~
 
-_**Console for private:**_
-
-~~~ shell
-export KUBECONFIG=~/.kube/config-private
-~~~
-
 _**Console for dmz:**_
 
 ~~~ shell
 export KUBECONFIG=~/.kube/config-dmz
 ~~~
 
+_**Console for private:**_
+
+~~~ shell
+export KUBECONFIG=~/.kube/config-private
+~~~
+
 ## Step 3: Access your clusters
 
 The procedure for accessing a Kubernetes cluster varies by
-provider. Find the instructions for your chosen provider and use
-them to authenticate and configure access for each console
-session.  See the following links for more information:
+provider. [Find the instructions for your chosen
+provider][kube-providers] and use them to authenticate and
+configure access for each console session.
 
-* [Minikube](https://skupper.io/start/minikube.html)
-* [Amazon Elastic Kubernetes Service (EKS)](https://skupper.io/start/eks.html)
-* [Azure Kubernetes Service (AKS)](https://skupper.io/start/aks.html)
-* [Google Kubernetes Engine (GKE)](https://skupper.io/start/gke.html)
-* [IBM Kubernetes Service](https://skupper.io/start/ibmks.html)
-* [OpenShift](https://skupper.io/start/openshift.html)
-* [More providers](https://kubernetes.io/partners/#kcsp)
+[kube-providers]: https://skupper.io/start/kubernetes.html
 
 ## Step 4: Set up your namespaces
 
@@ -134,33 +145,6 @@ kubectl create namespace public
 kubectl config set-context --current --namespace public
 ~~~
 
-_Sample output:_
-
-~~~ console
-$ kubectl create namespace public
-namespace/public created
-
-$ kubectl config set-context --current --namespace public
-Context "minikube" modified.
-~~~
-
-_**Console for private:**_
-
-~~~ shell
-kubectl create namespace private
-kubectl config set-context --current --namespace private
-~~~
-
-_Sample output:_
-
-~~~ console
-$ kubectl create namespace private
-namespace/private created
-
-$ kubectl config set-context --current --namespace private
-Context "minikube" modified.
-~~~
-
 _**Console for dmz:**_
 
 ~~~ shell
@@ -168,14 +152,11 @@ kubectl create namespace dmz
 kubectl config set-context --current --namespace dmz
 ~~~
 
-_Sample output:_
+_**Console for private:**_
 
-~~~ console
-$ kubectl create namespace dmz
-namespace/dmz created
-
-$ kubectl config set-context --current --namespace dmz
-Context "minikube" modified.
+~~~ shell
+kubectl create namespace private
+kubectl config set-context --current --namespace private
 ~~~
 
 ## Step 5: Install Skupper in your namespaces
@@ -195,12 +176,10 @@ _**Console for public:**_
 skupper init
 ~~~
 
-_Sample output:_
+_**Console for dmz:**_
 
-~~~ console
-$ skupper init
-Waiting for LoadBalancer IP or hostname...
-Skupper is now installed in namespace 'public'.  Use 'skupper status' to get more information.
+~~~ shell
+skupper init
 ~~~
 
 _**Console for private:**_
@@ -214,21 +193,7 @@ _Sample output:_
 ~~~ console
 $ skupper init
 Waiting for LoadBalancer IP or hostname...
-Skupper is now installed in namespace 'private'.  Use 'skupper status' to get more information.
-~~~
-
-_**Console for dmz:**_
-
-~~~ shell
-skupper init
-~~~
-
-_Sample output:_
-
-~~~ console
-$ skupper init
-Waiting for LoadBalancer IP or hostname...
-Skupper is now installed in namespace 'dmz'.  Use 'skupper status' to get more information.
+Skupper is now installed in namespace '<namespace>'.  Use 'skupper status' to get more information.
 ~~~
 
 ## Step 6: Check the status of your namespaces
@@ -242,13 +207,10 @@ _**Console for public:**_
 skupper status
 ~~~
 
-_Sample output:_
+_**Console for dmz:**_
 
-~~~ console
-$ skupper status
-Skupper is enabled for namespace "public" in interior mode. It is connected to 1 other site. It has 1 exposed service.
-The site console url is: <console-url>
-The credentials for internal console-auth mode are held in secret: 'skupper-console-users'
+~~~ shell
+skupper status
 ~~~
 
 _**Console for private:**_
@@ -260,23 +222,7 @@ skupper status
 _Sample output:_
 
 ~~~ console
-$ skupper status
-Skupper is enabled for namespace "private" in interior mode. It is connected to 1 other site. It has 1 exposed service.
-The site console url is: <console-url>
-The credentials for internal console-auth mode are held in secret: 'skupper-console-users'
-~~~
-
-_**Console for dmz:**_
-
-~~~ shell
-skupper status
-~~~
-
-_Sample output:_
-
-~~~ console
-$ skupper status
-Skupper is enabled for namespace "dmz" in interior mode. It is connected to 1 other site. It has 1 exposed service.
+Skupper is enabled for namespace "<namespace>" in interior mode. It is connected to 1 other site. It has 1 exposed service.
 The site console url is: <console-url>
 The credentials for internal console-auth mode are held in secret: 'skupper-console-users'
 ~~~
@@ -285,6 +231,23 @@ As you move through the steps below, you can use `skupper status` at
 any time to check your progress.
 
 ## Step 7: Link your namespaces
+
+Creating a link requires use of two `skupper` commands in
+conjunction, `skupper token create` and `skupper link create`.
+
+The `skupper token create` command generates a secret token that
+signifies permission to create a link.  The token also carries the
+link details.  Then, in a remote namespace, The `skupper link
+create` command uses the token to create a link to the namespace
+that generated it.
+
+**Note:** The link token is truly a *secret*.  Anyone who has the
+token can link to your namespace.  Make sure that only those you
+trust have access to it.
+
+First, use `skupper token create` in one namespace to generate the
+token.  Then, use `skupper link create` in the other to create a
+link.
 
 _**Console for public:**_
 
@@ -304,6 +267,11 @@ _**Console for dmz:**_
 skupper link create ~/public.token
 skupper link create ~/private.token
 ~~~
+
+If your console sessions are on different machines, you may need
+to use `sftp` or a similar tool to transfer the token securely.
+By default, tokens expire after a single use or 15 minutes after
+creation.
 
 ## Step 8: Deploy the frontend and backend services
 
@@ -484,9 +452,9 @@ documenting and testing Skupper examples.
 
 [skewer]: https://github.com/skupperproject/skewer
 
-Skewer provides some utilities for generating the README and running
-the example steps.  Use the `./plano` command in the project root to
-see what is available.
+Skewer provides utility functions for generating the README and
+running the example steps.  Use the `./plano` command in the project
+root to see what is available.
 
 To quickly stand up the example using Minikube, try the `./plano demo`
 command.
