@@ -19,8 +19,8 @@ overview: |
   The backend service runs in the private on-prem cluster, and the
   frontend service runs in the public cloud.  The private and public
   sites are linked by a relay site in the DMZ.  Skupper enables the
-  frontend to connect to the backend over a dedicated application
-  network.
+  frontend to connect to the backend over a secure dedicated
+  application network.
 
   <img src="images/entities.svg" style="max-width: 100%;"/>
 sites:
