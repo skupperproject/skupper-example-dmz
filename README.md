@@ -43,13 +43,16 @@ It contains two services:
   returns greetings of the form `Hi, <your-name>.  I am <my-name>
   (<pod>)`.
 
-* A frontend service that sends greetings to the backend and
-  fetches new greetings in response.
+* A frontend service that connects to the backend.  It sends
+  greetings to the backend and fetches new greetings in response.
 
 The backend service runs in the private on-prem cluster, and the
-frontend service runs in the public cloud.  The two sites are linked
-by a relay site in the DMZ.  Skupper enables the frontend to connect
-to the backend without a VPN or special firewall rules.
+frontend service runs in the public cloud.  The private and public
+sites are linked by a relay site in the DMZ.  Skupper enables the
+frontend to connect to the backend over a dedicated application
+network.
+
+<img src="images/entities.svg" style="max-width: 100%;"/>
 
 ## Prerequisites
 
