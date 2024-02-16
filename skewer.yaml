@@ -46,15 +46,25 @@ steps:
   - standard: kubernetes/set_up_your_namespaces
   - standard: hello_world/deploy_the_frontend_and_backend
   - standard: kubernetes/create_your_sites
-  - standard: link_your_sites
+  - standard: kubernetes/link_your_sites
     commands:
       public:
         - run: skupper token create ~/public.token
+          output: |
+            Token written to ~/public.token
       private:
         - run: skupper token create ~/private.token
+          output: |
+            Token written to ~/private.token
       dmz:
         - run: skupper link create ~/public.token
+          output: |
+            Site configured to link to https://10.104.83.146:8081/7c60e772-ccca-11ee-ae58-04421a4c5042 (name=link1)
+            Check the status of the link using 'skupper link status'.
         - run: skupper link create ~/private.token
+          output: |
+            Site configured to link to https://10.111.28.147:8081/7ccdd561-ccca-11ee-8269-04421a4c5042 (name=link2)
+            Check the status of the link using 'skupper link status'.
   - standard: hello_world/expose_the_backend
   - standard: hello_world/access_the_frontend
   - standard: hello_world/cleaning_up

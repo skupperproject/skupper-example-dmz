@@ -193,10 +193,10 @@ _Sample output:_
 $ skupper init
 Waiting for LoadBalancer IP or hostname...
 Waiting for status...
-Skupper is now installed in namespace 'west'.  Use 'skupper status' to get more information.
+Skupper is now installed in namespace 'public'.  Use 'skupper status' to get more information.
 
 $ skupper status
-Skupper is enabled for namespace "west". It is not connected to any other sites. It has no exposed services.
+Skupper is enabled for namespace "public". It is not connected to any other sites. It has no exposed services.
 ~~~
 
 _**Private:**_
@@ -212,10 +212,10 @@ _Sample output:_
 $ skupper init
 Waiting for LoadBalancer IP or hostname...
 Waiting for status...
-Skupper is now installed in namespace 'east'.  Use 'skupper status' to get more information.
+Skupper is now installed in namespace 'private'.  Use 'skupper status' to get more information.
 
 $ skupper status
-Skupper is enabled for namespace "east". It is not connected to any other sites. It has no exposed services.
+Skupper is enabled for namespace "private". It is not connected to any other sites. It has no exposed services.
 ~~~
 
 _**DMZ:**_
@@ -231,16 +231,20 @@ _Sample output:_
 $ skupper init
 Waiting for LoadBalancer IP or hostname...
 Waiting for status...
-Skupper is now installed in namespace 'east'.  Use 'skupper status' to get more information.
+Skupper is now installed in namespace 'dmz'.  Use 'skupper status' to get more information.
 
 $ skupper status
-Skupper is enabled for namespace "east". It is not connected to any other sites. It has no exposed services.
+Skupper is enabled for namespace "dmz". It is not connected to any other sites. It has no exposed services.
 ~~~
 
 As you move through the steps below, you can use `skupper status` at
 any time to check your progress.
 
 ## Step 5: Link your sites
+
+A Skupper _link_ is a channel for communication between two sites.
+Links serve as a transport for application connections and
+requests.
 
 Creating a link requires use of two `skupper` commands in
 conjunction, `skupper token create` and `skupper link create`.
@@ -265,10 +269,24 @@ _**Public:**_
 skupper token create ~/public.token
 ~~~
 
+_Sample output:_
+
+~~~ console
+$ skupper token create ~/public.token
+Token written to ~/public.token
+~~~
+
 _**Private:**_
 
 ~~~ shell
 skupper token create ~/private.token
+~~~
+
+_Sample output:_
+
+~~~ console
+$ skupper token create ~/private.token
+Token written to ~/private.token
 ~~~
 
 _**DMZ:**_
@@ -276,6 +294,18 @@ _**DMZ:**_
 ~~~ shell
 skupper link create ~/public.token
 skupper link create ~/private.token
+~~~
+
+_Sample output:_
+
+~~~ console
+$ skupper link create ~/public.token
+Site configured to link to https://10.104.83.146:8081/7c60e772-ccca-11ee-ae58-04421a4c5042 (name=link1)
+Check the status of the link using 'skupper link status'.
+
+$ skupper link create ~/private.token
+Site configured to link to https://10.111.28.147:8081/7ccdd561-ccca-11ee-8269-04421a4c5042 (name=link2)
+Check the status of the link using 'skupper link status'.
 ~~~
 
 If your terminal sessions are on different machines, you may need
